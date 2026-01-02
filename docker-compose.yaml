@@ -1,0 +1,105 @@
+version: '3.8'
+
+services:
+  # --- INFRASTRUCTURE ---
+  
+  gateway:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+    volumes:
+      - ./infrastructure/nginx/docker-nginx.conf:/etc/nginx/nginx.conf
+    depends_on:
+      - ui-service
+      - accounts-service
+      - core-service
+
+  db-accounts:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: accounts_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    volumes:
+      - pg_accounts_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  db-verification:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: verification_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    volumes:
+      - pg_core_data:/var/lib/postgresql/data
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "15672:15672" # Management UI
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    healthcheck:
+      test: rabbitmq-diagnostics -q ping
+      interval: 10s
+      timeout: 30s
+      retries: 5
+
+  redis:
+    image: redis:alpine
+
+  # --- MICROSERVICES ---
+
+  accounts-service:
+    build: ./services/accounts
+    command: ["/entrypoint.sh"]
+    environment:
+      DB_HOST: db-accounts
+      DB_NAME: accounts_db
+      DB_USER: postgres
+      DB_PASSWORD: password
+    depends_on:
+      db-accounts:
+        condition: service_healthy
+
+  core-service:
+    build: ./services/core
+    environment:
+      RABBITMQ_HOST: rabbitmq
+      REDIS_NODES: redis://redis:6379
+      DB_HOST: db-verification
+    depends_on:
+      - rabbitmq
+      - redis
+      - db-verification
+
+  core-worker:
+    build: ./services/core
+    # Override the default CMD to run the worker script instead of the API
+    command: ["python", "app/worker.py"]
+    environment:
+      RABBITMQ_HOST: rabbitmq
+      REDIS_NODES: redis://redis:6379
+      DB_HOST: db-verification
+    depends_on:
+      - rabbitmq
+      - redis
+      - db-verification
+
+  ui-service:
+    build: ./services/ui
+    environment:
+      # This is for build time if you need env vars baked in
+      VITE_API_URL: http://localhost  # Browser calls gateway on localhost
+    depends_on:
+      - accounts-service
+      - core-service
+
+volumes:
+  pg_accounts_data:
+  pg_core_data:

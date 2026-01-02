@@ -1,0 +1,74 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: rabbitmq
+spec:
+  ports:
+  - port: 5672
+    name: amqp
+  - port: 15672
+    name: http
+  selector:
+    app: rabbitmq
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rabbitmq
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rabbitmq
+  template:
+    metadata:
+      labels:
+        app: rabbitmq
+    spec:
+      containers:
+      - name: rabbitmq
+        image: rabbitmq:3-management
+        ports:
+        - containerPort: 5672
+        - containerPort: 15672
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: core-service
+spec:
+  replicas: 2  # Horizontal Scaling
+  selector:
+    matchLabels:
+      app: core-service
+  template:
+    metadata:
+      labels:
+        app: core-service
+    spec:
+      containers:
+      - name: api
+        image: email-verifier-core:latest
+        command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8001"]
+        env:
+        - name: RABBITMQ_HOST
+          value: "rabbitmq"
+        ports:
+        - containerPort: 8001
+      - name: worker
+        image: email-verifier-core:latest
+        command: ["python", "app/worker.py"]
+        env:
+        - name: RABBITMQ_HOST
+          value: "rabbitmq"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: core-service
+spec:
+  ports:
+  - port: 8001
+    targetPort: 8001
+  selector:
+    app: core-service

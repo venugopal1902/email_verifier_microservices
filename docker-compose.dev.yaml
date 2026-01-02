@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  # Database for Accounts Service
+  db-accounts:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: accounts_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    ports:
+      - "54321:5432"
+    volumes:
+      - pg_accounts_data:/var/lib/postgresql/data
+
+  # Database for Core Service (Verification Data)
+  db-verification:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: verification_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    ports:
+      - "54320:5432" # Mapped to 5433 to avoid conflict
+    volumes:
+      - pg_core_data:/var/lib/postgresql/data
+
+  # Message Broker
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "56721:5672"   # AMQP
+      - "15672:15672" # Dashboard
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+
+  # Redis Cluster Node 1 (Simulated Single Node for Dev)
+  redis-1:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+
+volumes:
+  pg_accounts_data:
+  pg_core_data:

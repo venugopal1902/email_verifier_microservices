@@ -1,3 +1,5 @@
+import React from 'react';
+
 const StatusBadge = ({ status }) => {
   const styles = {
     COMPLETED: "bg-emerald-100 text-emerald-700 border-emerald-200",
@@ -12,3 +14,5 @@ const StatusBadge = ({ status }) => {
     </span>
   );
 };
+
+export default StatusBadge;

@@ -1,3 +1,6 @@
+import React, { useState } from 'react';
+import { ShieldCheck, Loader2, AlertCircle } from 'lucide-react';
+
 const LoginPage = ({ onLogin, loading, error, setDemoMode }) => {
   const [username, setUsername] = useState('admin');
   const [password, setPassword] = useState('password');
@@ -71,3 +74,5 @@ const LoginPage = ({ onLogin, loading, error, setDemoMode }) => {
     </div>
   );
 };
+
+export default LoginPage;

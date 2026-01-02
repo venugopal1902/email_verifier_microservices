@@ -1,3 +1,6 @@
+import React from 'react';
+import { Upload, Activity, Settings, X } from 'lucide-react';
+
 const Sidebar = ({ activeTab, setActiveTab, isOpen, closeMobile }) => {
   const NavItem = ({ id, icon: Icon, label }) => (
     <button
@@ -51,3 +54,5 @@ const Sidebar = ({ activeTab, setActiveTab, isOpen, closeMobile }) => {
     </>
   );
 };
+
+export default Sidebar;

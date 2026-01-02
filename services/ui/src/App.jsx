@@ -19,7 +19,7 @@ import FileUpload from './components/FileUpload.jsx';
 import Navbar from './components/Navbar.jsx';
 import Sidebar from './components/Sidebar.jsx';
 import DashboardPage from './pages/Dashboard.jsx';
-import LoginPage from './pages/login.jsx';
+import LoginPage from './pages/Login.jsx';
 import StatusBadge from './components/StatusBadge.jsx';
 /* ==========================================================================
    INSTRUCTIONS FOR LOCAL DEVELOPMENT:

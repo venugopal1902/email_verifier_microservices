@@ -1,3 +1,6 @@
+import React, { useState, useRef } from 'react';
+import { Upload, FileText, CheckCircle, AlertCircle, Loader2 } from 'lucide-react';
+
 const FileUpload = ({ api, addJob, demoMode, handleApiError }) => {
   const [file, setFile] = useState(null);
   const [uploading, setUploading] = useState(false);
@@ -124,3 +127,5 @@ const FileUpload = ({ api, addJob, demoMode, handleApiError }) => {
     </div>
   );
 };
+
+export default FileUpload;

@@ -1,9 +1,22 @@
+import React, { useState, useEffect } from 'react';
+import { Settings } from 'lucide-react';
+import Navbar from '../components/Navbar';
+import Sidebar from '../components/Sidebar';
+import FileUpload from '../components/FileUpload';
+import StatusBadge from '../components/StatusBadge';
+import { handleApiError } from '../api/client';
+
 const DashboardPage = ({ user, api, onLogout, demoMode }) => {
   const [activeTab, setActiveTab] = useState('upload');
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [jobs, setJobs] = useState([]);
 
-  // Fetch jobs simulation
+  // Mock Jobs for Demo Mode
+  const MOCK_JOBS = [
+    { job_id: 'job-123', original_filename: 'leads_dec_2025.csv', status: 'COMPLETED', progress: '100%', created_at: '2025-12-22' },
+    { job_id: 'job-124', original_filename: 'newsletter_subscribers.csv', status: 'PROCESSING', progress: '45%', created_at: '2026-01-02' },
+  ];
+
   useEffect(() => {
     if (demoMode) {
       setJobs(MOCK_JOBS);
@@ -95,3 +108,5 @@ const DashboardPage = ({ user, api, onLogout, demoMode }) => {
     </div>
   );
 };
+
+export default DashboardPage;

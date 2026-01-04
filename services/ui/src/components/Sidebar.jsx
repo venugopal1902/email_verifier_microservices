@@ -18,12 +18,9 @@ const Sidebar = ({ activeTab, setActiveTab, isOpen, closeMobile }) => {
 
   return (
     <>
-      {/* Mobile Overlay */}
       {isOpen && (
         <div className="fixed inset-0 bg-black/20 z-20 lg:hidden" onClick={closeMobile} />
       )}
-      
-      {/* Sidebar Content */}
       <aside className={`fixed inset-y-0 left-0 bg-white border-r w-64 transform transition-transform duration-200 ease-in-out z-30 lg:translate-x-0 lg:static lg:h-[calc(100vh-64px)] ${
         isOpen ? 'translate-x-0' : '-translate-x-full'
       }`}>
@@ -40,14 +37,6 @@ const Sidebar = ({ activeTab, setActiveTab, isOpen, closeMobile }) => {
             
             <div className="text-xs font-semibold text-gray-400 uppercase tracking-wider mt-6 mb-3 px-4">Account</div>
             <NavItem id="settings" icon={Settings} label="Settings" />
-          </div>
-
-          <div className="bg-gray-50 rounded-xl p-4 mt-4">
-            <h4 className="text-xs font-semibold text-gray-500 uppercase">System Status</h4>
-            <div className="flex items-center gap-2 mt-2 text-sm text-emerald-600">
-              <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-              Operational
-            </div>
           </div>
         </div>
       </aside>

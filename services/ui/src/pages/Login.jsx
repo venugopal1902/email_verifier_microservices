@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { ShieldCheck, Loader2, AlertCircle } from 'lucide-react';
 
-const LoginPage = ({ onLogin, loading, error, setDemoMode }) => {
+const LoginPage = ({ onLogin, loading, error }) => {
   const [username, setUsername] = useState('admin');
   const [password, setPassword] = useState('password');
 
@@ -44,7 +44,7 @@ const LoginPage = ({ onLogin, loading, error, setDemoMode }) => {
               />
             </div>
 
-            {error && !error.includes("Switch to Demo") && (
+            {error && (
               <div className="text-red-600 text-sm bg-red-50 p-3 rounded-lg flex items-start gap-2 border border-red-100">
                 <AlertCircle size={16} className="mt-0.5 shrink-0" /> 
                 <span>{error}</span>
@@ -60,15 +60,6 @@ const LoginPage = ({ onLogin, loading, error, setDemoMode }) => {
               {loading ? 'Authenticating...' : 'Sign In'}
             </button>
           </form>
-          
-          <div className="mt-8 pt-6 border-t border-gray-100 text-center">
-             <button 
-                onClick={() => setDemoMode(true)}
-                className="text-xs text-gray-500 hover:text-blue-600 underline transition-colors"
-              >
-                Having connection issues? Try Demo Mode
-              </button>
-          </div>
         </div>
       </div>
     </div>

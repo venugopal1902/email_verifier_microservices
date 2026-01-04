@@ -1,7 +1,7 @@
 import axios from 'axios';
 
-// Get API URL from environment (Docker/Vite) or default to relative path
-const API_URL = import.meta.env.VITE_API_URL || '';
+// Use empty string to allow Nginx to proxy requests (e.g. /api/auth/...)
+const API_URL = '';
 
 export const apiClient = axios.create({
   baseURL: API_URL,
@@ -15,18 +15,14 @@ apiClient.interceptors.request.use((config) => {
   return config;
 });
 
-// Response Interceptor: Handle 401s
+// Response Interceptor: Handle 401s (Token Expiry)
 apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
-    console.error("API Error:", error);
-    
     if (error.response && error.response.status === 401) {
-      // Token is invalid or expired
-      console.warn("Unauthorized! Clearing token and logging out.");
+      console.warn("Unauthorized! Clearing token.");
       localStorage.removeItem('access_token');
-      
-      // Dispatch a custom event so App.jsx can react immediately
+      // Dispatch event for App.jsx to handle logout
       window.dispatchEvent(new Event('auth-logout'));
     }
     return Promise.reject(error);

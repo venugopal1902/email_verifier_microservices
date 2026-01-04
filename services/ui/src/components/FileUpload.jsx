@@ -1,7 +1,8 @@
 import React, { useState, useRef } from 'react';
 import { Upload, FileText, CheckCircle, AlertCircle, Loader2 } from 'lucide-react';
+import { handleApiError } from '../api/client';
 
-const FileUpload = ({ api, addJob, demoMode, handleApiError }) => {
+const FileUpload = ({ api }) => {
   const [file, setFile] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [message, setMessage] = useState(null);
@@ -19,25 +20,6 @@ const FileUpload = ({ api, addJob, demoMode, handleApiError }) => {
     setUploading(true);
     setMessage(null);
 
-    // --- DEMO MODE SIMULATION ---
-    if (demoMode) {
-      setTimeout(() => {
-        setUploading(false);
-        setMessage({ type: 'success', text: 'File uploaded successfully! Processing started.' });
-        addJob({
-          job_id: `job-${Date.now()}`,
-          original_filename: file.name,
-          status: 'QUEUED',
-          progress: '0%',
-          created_at: new Date().toISOString().split('T')[0]
-        });
-        setFile(null);
-        if (fileInputRef.current) fileInputRef.current.value = "";
-      }, 1500);
-      return;
-    }
-
-    // --- REAL API CALL ---
     const formData = new FormData();
     formData.append('file', file);
 
@@ -46,13 +28,6 @@ const FileUpload = ({ api, addJob, demoMode, handleApiError }) => {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
       setMessage({ type: 'success', text: `Upload complete. Job ID: ${res.data.job_id}` });
-      addJob({
-        job_id: res.data.job_id,
-        original_filename: file.name,
-        status: 'QUEUED',
-        progress: '0%',
-        created_at: new Date().toISOString().split('T')[0]
-      });
       setFile(null);
       if (fileInputRef.current) fileInputRef.current.value = "";
     } catch (err) {
@@ -75,7 +50,6 @@ const FileUpload = ({ api, addJob, demoMode, handleApiError }) => {
         <h2 className="text-2xl font-bold text-gray-900">Upload CSV List</h2>
         <p className="text-gray-500 mt-2">
           Upload your email list (CSV or TXT) to begin real-time verification. 
-          <br/>We support files up to 100MB.
         </p>
       </div>
 
